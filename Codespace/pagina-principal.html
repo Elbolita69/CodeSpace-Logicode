@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePreguntas - Portal para Principiantes en Programación</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --card-bg: #fff;
+            --success-color: #2ecc71;
+            --warning-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .questions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .question-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .question-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-title {
+            font-size: 1.25rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .code-preview {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 70%;
+            max-width: 800px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 150px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">CodePreguntas</div>
+        <div class="user-menu">
+            <button class="button" id="loginBtn">Iniciar Sesión</button>
+            <button class="button" id="registerBtn">Registrarse</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h1>Bienvenido a CodePreguntas</h1>
+            <p>El portal para principiantes en programación donde puedes encontrar respuestas a tus dudas y compartir tu conocimiento.</p>
+            <button class="button" id="addQuestionBtn">Añadir Nueva Pregunta</button>
+        </div>
+
+        <h2>Preguntas Populares</h2>
+        <div class="questions-container">
+            <!-- Ejemplo de pregunta -->
+            <div class="question-card">
+                <h3 class="question-title">¿Cómo crear un bucle for en JavaScript?</h3>
+                <div class="code-preview">
+                    for (let i = 0; i < 10; i++) {
+                        console.log("Iteración: " + i);
+                    }
+                </div>
+                <div>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Principiante</span>
+                </div>
+            </div>
+            <!-- Fin ejemplo -->
+
+            <!-- Ejemplo de pregunta -->
+            <div class="question-card">
+                <h3 class="question-title">¿Cómo crear un arreglo en Python?</h3>
+                <div class="code-preview">
+                    # Creando un arreglo (lista) en Python
+                    mi_lista = [1, 2, 3, 4, 5]
+                    print(mi_lista)
+                </div>
+                <div>
+                    <span class="tag">Python</span>
+                    <span class="tag">Principiante</span>
+                </div>
+            </div>
+            <!-- Fin ejemplo -->
+
+            <!-- Ejemplo de pregunta -->
+            <div class="question-card">
+                <h3 class="question-title">¿Cómo conectar a una base de datos MySQL con PHP?</h3>
+                <div class="code-preview">
+                    &lt;?php
+                    $servername = "localhost";
+                    $username = "usuario";
+                    $password = "contraseña";
+                    $dbname = "miBaseDeDatos";
+
+                    // Crear conexión
+                    $conn = new mysqli($servername, $username, $password, $dbname);
+
+                    // Verificar conexión
+                    if ($conn->connect_error) {
+                        die("Conexión fallida: " . $conn->connect_error);
+                    }
+                    echo "Conexión exitosa";
+                    ?&gt;
+                </div>
+                <div>
+                    <span class="tag">PHP</span>
+                    <span class="tag">MySQL</span>
+                    <span class="tag">Intermedio</span>
+                </div>
+            </div>
+            <!-- Fin ejemplo -->
+        </div>
+    </div>
+
+    <!-- Modal para añadir pregunta -->
+    <div id="questionModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Añadir Nueva Pregunta</h2>
+            <form id="questionForm">
+                <div class="form-group">
+                    <label for="questionTitle">Título de la pregunta:</label>
+                    <input type="text" id="questionTitle" name="questionTitle" placeholder="Ej: ¿Cómo crear un arreglo en JavaScript?" required>
+                </div>
+                <div class="form-group">
+                    <label for="codeAnswer">Código de respuesta:</label>
+                    <textarea id="codeAnswer" name="codeAnswer" placeholder="Escribe aquí tu código..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="questionTags">Etiquetas (separadas por coma):</label>
+                    <input type="text" id="questionTags" name="questionTags" placeholder="Ej: JavaScript, Arrays, Principiante">
+                </div>
+                <button type="submit" class="button">Enviar para revisión</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de login/registro -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Iniciar Sesión</div>
+                <div class="tab" data-tab="register">Registrarse</div>
+            </div>
+            
+            <div class="tab-content active" id="login">
+                <form class="login-form">
+                    <div class="form-group">
+                        <label for="loginEmail">Correo electrónico:</label>
+                        <input type="email" id="loginEmail" name="loginEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Contraseña:</label>
+                        <input type="password" id="loginPassword" name="loginPassword" required>
+                    </div>
+                    <button type="submit" class="button">Iniciar Sesión</button>
+                </form>
+            </div>
+            
+            <div class="tab-content" id="register">
+                <form class="login-form">
+                    <div class="form-group">
+                        <label for="registerName">Nombre:</label>
+                        <input type="text" id="registerName" name="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Correo electrónico:</label>
+                        <input type="email" id="registerEmail" name="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Contraseña:</label>
+                        <input type="password" id="registerPassword" name="registerPassword" required>
+                    </div>
+                    <button type="submit" class="button">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 CodePreguntas - Portal para Principiantes en Programación</p>
+    </footer>
+
+    <script>
+        // Manejo de modales
+        const questionModal = document.getElementById('questionModal');
+        const authModal = document.getElementById('authModal');
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const closeBtns = document.querySelectorAll('.close');
+        
+        // Abrir modal de pregunta
+        addQuestionBtn.addEventListener('click', () => {
+            questionModal.style.display = 'block';
+        });
+        
+        // Abrir modal de login
+        loginBtn.addEventListener('click', () => {
+            authModal.style.display = 'block';
+            document.querySelector('.tab[data-tab="login"]').click();
+        });
+        
+        // Abrir modal de registro
+        registerBtn.addEventListener('click', () => {
+            authModal.style.display = 'block';
+            document.querySelector('.tab[data-tab="register"]').click();
+        });
+        
+        // Cerrar modales
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.parentElement.style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target == questionModal) {
+                questionModal.style.display = 'none';
+            }
+            if (e.target == authModal) {
+                authModal.style.display = 'none';
+            }
+        });
+        
+        // Manejar pestañas de login/registro
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Desactivar todas las pestañas
+                tabs.forEach(t => t.classList.remove('active'));
+                // Activar pestaña actual
+                tab.classList.add('active');
+                
+                // Ocultar todos los contenidos
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                // Mostrar contenido de la pestaña actual
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Envío de formulario (simulado)
+        document.getElementById('questionForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Tu pregunta ha sido enviada para revisión por un administrador. ¡Gracias por contribuir!');
+            questionModal.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

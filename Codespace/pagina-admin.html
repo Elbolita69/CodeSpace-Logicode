@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador - CodePreguntas</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --card-bg: #fff;
+            --success-color: #2ecc71;
+            --warning-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .button-success {
+            background-color: var(--success-color);
+        }
+
+        .button-success:hover {
+            background-color: #27ae60;
+        }
+
+        .button-warning {
+            background-color: var(--warning-color);
+        }
+
+        .button-warning:hover {
+            background-color: #c0392b;
+        }
+
+        .admin-panel {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: #eef2f7;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu a.active {
+            font-weight: bold;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .question-review {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .question-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            background-color: #f1c40f;
+            color: #333;
+        }
+
+        .code-preview {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #e0f7fa;
+            color: #00838f;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f5f5f5;
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 70%;
+            max-width: 800px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 150px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">CodePreguntas - Panel de Administrador</div>
+        <div class="user-menu">
+            <span>Administrador</span>
+            <button class="button">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="admin-panel">
+            <div class="sidebar">
+                <h3>Menu de Administración</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Preguntas Pendientes</a></li>
+                    <li><a href="#">Preguntas Aprobadas</a></li>
+                    <li><a href="#">Preguntas Rechazadas</a></li>
+                    <li><a href="#">Gestionar Usuarios</a></li>
+                    <li><a href="#">Configuración</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content">
+                <h2>Dashboard</h2>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-number">25</div>
+                        <div class="stat-label">Preguntas pendientes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">124</div>
+                        <div class="stat-label">Preguntas aprobadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">18</div>
+                        <div class="stat-label">Preguntas rechazadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">342</div>
+                        <div class="stat-label">Usuarios registrados</div>
+                    </div>
+                </div>
+
+                <h3>Preguntas pendientes de revisión</h3>
+                
+                <div class="question-review">
+                    <div class="question-header">
+                        <h3>¿Cómo crear un objeto JSON en JavaScript?</h3>
+                        <span class="question-status">Pendiente</span>
+                    </div>
+                    <p>Enviado por: usuario123@email.com - 10/04/2025</p>
+                    <div class="code-preview">
+                        // Creando un objeto JSON en JavaScript
+                        const persona = {
+                            "nombre": "Juan",
+                            "apellido": "Pérez",
+                            "edad": 30,
+                            "email": "juan@example.com",
+                            "intereses": ["programación", "música", "deportes"]
+                        };
+
+                        // Convertir objeto a string JSON
+                        const personaJSON = JSON.stringify(persona);
+                        console.log(personaJSON);
+
+                        // Convertir string JSON a objeto
+                        const objetoDesdeJSON = JSON.parse(personaJSON);
+                        console.log(objetoDesdeJSON.nombre); // Muestra "Juan"
+                    </div>
+                    <div>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">JSON</span>
+                        <span class="tag">Principiante</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="button button-success">Aprobar Pregunta</button>
+                        <button class="button button-warning">Rechazar Pregunta</button>
+                        <button class="button">Editar Pregunta</button>
+                    </div>
+                </div>
+
+                <div class="question-review">
+                    <div class="question-header">
+                        <h3>¿Cómo instalar paquetes con npm?</h3>
+                        <span class="question-status">Pendiente</span>
+                    </div>
+                    <p>Enviado por: developer42@email.com - 09/04/2025</p>
+                    <div class="code-preview">
+                        # Instalar un paquete y guardarlo en dependencias
+                        npm install nombre-paquete --save
+
+                        # Instalar un paquete y guardarlo en devDependencies
+                        npm install nombre-paquete --save-dev
+
+                        # Instalar un paquete global
+                        npm install -g nombre-paquete
+
+                        # Instalar una versión específica
+                        npm install nombre-paquete@1.2.3
+                    </div>
+                    <div>
+                        <span class="tag">npm</span>
+                        <span class="tag">Node.js</span>
+                        <span class="tag">Intermedio</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="button button-success">Aprobar Pregunta</button>
+                        <button class="button button-warning">Rechazar Pregunta</button>
+                        <button class="button">Editar Pregunta</button>
+                    </div>
+                </div>
+
+                <h3>Estadísticas Recientes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Preguntas Enviadas</th>
+                            <th>Preguntas Aprobadas</th>
+                            <th>Preguntas Rechazadas</th>
+                            <th>Nuevos Usuarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10/04/2025</td>
+                            <td>12</td>
+                            <td>8</td>
+                            <td>3</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>09/04/2025</td>
+                            <td>15</td>
+                            <td>10</td>
+                            <td>2</td>
+                            <td>7</td>
+                        </tr>
+                        <tr>
+                            <td>08/04/2025</td>
+                            <td>9</td>
+                            <td>7</td>
+                            <td>1</td>
+                            <td>3</td>
+                        </tr>
+                        <tr>
+                            <td>07/04/2025</td>
+                            <td>14</td>
+                            <td>11</td>
+                            <td>3</td>
+                            <td>6</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar pregunta -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Pregunta</h2>
+            <form id="editQuestionForm">
+                <div class="form-group">
+                    <label for="editTitle">Título de la pregunta:</label>
+                    <input type="text" id="editTitle" name="editTitle" value="¿Có
